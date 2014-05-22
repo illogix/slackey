@@ -9,6 +9,8 @@ import java.nio.charset.Charset
 
 import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
 
+import scalaj.http.{Http => HttpJ}
+
 import util.Properties
 
 object Web {
@@ -26,8 +28,13 @@ object Web {
 
 class Slackey extends Service[HttpRequest, HttpResponse] {
 
-  val webHookToken: String = "REwjJhtU7rbm6fyAXt7FCni6"
+  // Tokens
+  val outWebHookToken: String = "REwjJhtU7rbm6fyAXt7FCni6"
   val slashRollToken: String = "b731yQBiwC3cwg24IlGjiEXS"
+  val inWebHookToken: String = "rFCX9chyUckjizCRPeuAwryX"
+
+  // URLs
+  val inWebHookURL: String = "https://poundc.slack.com/services/hooks/incoming-webhook?token="
 
   // webHook POST example
   //  token=REwjJhtU7rbm6fyAXt7FCni6&team_id=T02A3F3HL&team_domain=poundc&service_id=2343925644&
@@ -56,7 +63,11 @@ class Slackey extends Service[HttpRequest, HttpResponse] {
   }
 
   def convert(urlEncoded: String): String = {
-    URLDecoder.decode(urlEncoded, "UTF-8").replace("\\", "\\\\").replace("\"", "\\\"")
+    URLDecoder.decode(urlEncoded, "UTF-8")
+  }
+
+  def makeJson(key: String, value: String): String = {
+    "{\"" + key + "\": \"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\"}"
   }
 
   def process(params: Map[String, String]): Future[HttpResponse] = {
@@ -64,31 +75,32 @@ class Slackey extends Service[HttpRequest, HttpResponse] {
       params.getOrElse(key, "(unknown " + key + ")")
     }
 
-    if (get("token") == webHookToken) {
+    if (get("token") == outWebHookToken) {
       if (get("text").startsWith("%21")) {
         // trigger: starts with !
         val resp: String = "Hi " + get("user_name") + ", you said: " + convert(get("text")).substring(1)
-        send(Some(resp))
+        respond(Some(resp))
       } else if (get("text").startsWith("%24")) {
         // trigger: starts with $
         val resp: String = get("user_name") + " talkin bout " + convert(get("text")).substring(1) + " dollars"
-        send(Some(resp))
+        respond(Some(resp))
       } else {
-        send(None)
+        respond(None)
       }
     } else if (get("token") == slashRollToken) {
-      val resp: String = "Hey there " + get("user_name") + ", you said: " + convert(get("text")).substring(1)
-      send(Some(resp))
+      val resp: String = get("user_name") + " rolling with: " + convert(get("text"))
+      HttpJ.post(inWebHookURL).params("text" -> makeJson("text", resp))
+      respond(None)
     } else {
-      send(None)
+      respond(None)
     }
   }
 
-  def send(resp: Option[String]): Future[HttpResponse] = {
+  def respond(resp: Option[String]): Future[HttpResponse] = {
     val response = Response()
     response.setStatusCode(200)
     resp match {
-      case Some(text) => response.setContentString("{\"text\": \"" + text + "\"}")
+      case Some(respText) => response.setContentString(makeJson("text", respText))
       case None =>
     }
     Future(response)
