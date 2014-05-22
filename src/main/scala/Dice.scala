@@ -55,7 +55,6 @@ class Dice {
       }
     }
 
-
     if (get("text").startsWith("%21start+")) {
       val playerList: List[String] = get("text").stripPrefix("%21start+").split("\\+").toList
       players = playerList.map(name => (Web.decode(name), 50)).toMap

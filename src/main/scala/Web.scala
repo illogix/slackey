@@ -56,8 +56,11 @@ class Slackey extends Service[HttpRequest, HttpResponse] {
   def apply(req: HttpRequest): Future[HttpResponse] = {
     val postParams: List[String] = req.getContent.toString(Charset.forName("UTF-8")).split("&").toList
     val params = postParams.map(pp => {
-      val pair = pp.split("=")
-      (pair(0), pair(1))
+      pp.split("=") match {
+        case Array(x, y) => (x, y)
+        case Array(x) => (x, "")
+        case _ => ("", "")
+      }
     }).toMap
     process(params)
   }
