@@ -23,14 +23,28 @@ object Web {
 
 class Hello extends Service[HttpRequest, HttpResponse] {
   def apply(req: HttpRequest) = {
-    process(req.getContent.toString(Charset.forName("UTF-8")))
+    val postParams:List[String] = req.getContent.toString(Charset.forName("UTF-8")).split("&").toList
+    val params = postParams.map(pp => {
+      val pair = pp.split("=")
+      (pair(0), pair(1))
+    }).toMap
+
+    if (params.getOrElse("text", "fail").startsWith("!")) {
+      val resp: String = "Hi " + params.getOrElse("user_name", "unknown") + ", you said: " +
+        params.getOrElse("text", "unknown")
+      process(Some(resp))
+    } else {
+      process(None)
+    }
   }
 
-  def process(req: String): Future[HttpResponse] = {
+  def process(resp:Option[String]): Future[HttpResponse] = {
     val response = Response()
     response.setStatusCode(200)
-    val resp:String = "{\"text\": \"" + req + "\"}"
-    response.setContentString(resp)
+    resp match {
+      case Some(text) => response.setContentString("{\"text\": \"" + text + "\"}")
+      case None =>
+    }
     Future(response)
   }
 }

@@ -5,12 +5,13 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/slackey.iml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/Web.scala" afterPath="$PROJECT_DIR$/src/main/scala/Web.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="slackey.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400724176060" ignored="false" />
-    <file path="$PROJECT_DIR$/../sherpa/atlassian-ide-plugin.xml" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400725010326" ignored="false" />
-    <file path="/Web.scala" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400724996320" ignored="false" />
+    <file path="$PROJECT_DIR$/../sherpa/atlassian-ide-plugin.xml" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400728637562" ignored="false" />
+    <file path="/Web.scala" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400728629792" ignored="false" />
     <file path="/a.dummy" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400724103321" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -75,10 +76,19 @@
       <file leaf-file-name="Web.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/Web.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="46" selection-start="991" selection-end="991" vertical-scroll-proportion="0.7357595">
+            <state line="38" column="0" selection-start="1236" selection-end="1236" vertical-scroll-proportion="0.64398736">
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Service.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.ivy2/cache/com.twitter/finagle-core/srcs/finagle-core-1.9.0-sources.jar!/com/twitter/finagle/Service.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="14" column="34" selection-start="485" selection-end="485" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -221,6 +231,7 @@
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="recentsLimit" value="5" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="MemberChooser.showClasses" value="true" />
@@ -446,27 +457,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.jboss.netty/netty/srcs/netty-3.2.5.Final-sources.jar!/org/jboss/netty/buffer/ChannelBuffer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1710" column="23" selection-start="68999" selection-end="68999" vertical-scroll-proportion="-8.52">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.jboss.netty/netty/srcs/netty-3.2.5.Final-sources.jar!/org/jboss/netty/handler/codec/http/HttpRequest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="43" selection-start="1318" selection-end="1318" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.jboss.netty/netty/srcs/netty-3.2.5.Final-sources.jar!/org/jboss/netty/handler/codec/http/HttpMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="92" column="18" selection-start="2935" selection-end="2935" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Procfile">
       <provider selected="true" editor-type-id="text-editor">
         <state line="1" column="0" selection-start="22" selection-end="22" vertical-scroll-proportion="0.023734177">
@@ -495,9 +485,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.jboss.netty/netty/srcs/netty-3.2.5.Final-sources.jar!/org/jboss/netty/buffer/ChannelBuffer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="238" column="17" selection-start="10070" selection-end="10070" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.jboss.netty/netty/srcs/netty-3.2.5.Final-sources.jar!/org/jboss/netty/handler/codec/http/HttpRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="17" selection-start="1292" selection-end="1292" vertical-scroll-proportion="0.33544305">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.jboss.netty/netty/srcs/netty-3.2.5.Final-sources.jar!/org/jboss/netty/handler/codec/http/DefaultHttpMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="13" selection-start="1211" selection-end="1211" vertical-scroll-proportion="-2.3496835">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.jboss.netty/netty/srcs/netty-3.2.5.Final-sources.jar!/org/jboss/netty/handler/codec/http/HttpMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="92" column="18" selection-start="2935" selection-end="2935" vertical-scroll-proportion="0.3322785">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.twitter/finagle-core/srcs/finagle-core-1.9.0-sources.jar!/com/twitter/finagle/Service.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="34" selection-start="485" selection-end="485" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/Web.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="46" selection-start="991" selection-end="991" vertical-scroll-proportion="0.7357595">
+        <state line="38" column="0" selection-start="1236" selection-end="1236" vertical-scroll-proportion="0.64398736">
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
