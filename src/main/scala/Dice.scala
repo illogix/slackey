@@ -42,9 +42,9 @@ class Dice {
       val hp: Int = players.get(player).get
       if (hp <= 0) {
         players = players - player
-        player + ":skull:" + hp
+        player + ": :skull:"
       } else {
-        player + ":heart_decoration:" + hp
+        player + ": " + hp + "HP"
       }
     }
 
@@ -61,7 +61,7 @@ class Dice {
     if (get("text").startsWith("%21start+")) {
       val playerList: List[String] = get("text").stripPrefix("%21start+").split("\\+").toList
       players = playerList.map(name => (Web.decode(name), 50)).toMap
-      post("Starting game with 50:heart_decoration: for the following players: " + playerList.mkString(", "))
+      post("Starting game with 50 HP for the following players: " + playerList.mkString(", "))
       None
     } else if (players.keySet.contains(get("user_name"))) {
       if (players.keySet.contains(get("text"))) {
