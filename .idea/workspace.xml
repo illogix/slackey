@@ -5,18 +5,12 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/slackey.iml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/Web.scala" afterPath="$PROJECT_DIR$/src/main/scala/Web.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.sbt" afterPath="$PROJECT_DIR$/build.sbt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/build.sbt" afterPath="$PROJECT_DIR$/project/build.sbt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="slackey.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400724176060" ignored="false" />
-    <file path="$PROJECT_DIR$/../sherpa/atlassian-ide-plugin.xml" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400724732680" ignored="false" />
-    <file path="/Web.scala" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400724716141" ignored="false" />
+    <file path="$PROJECT_DIR$/../sherpa/atlassian-ide-plugin.xml" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400725010326" ignored="false" />
+    <file path="/Web.scala" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400724996320" ignored="false" />
     <file path="/a.dummy" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400724103321" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -81,7 +75,7 @@
       <file leaf-file-name="Web.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/Web.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="0" selection-start="993" selection-end="993" vertical-scroll-proportion="0.75949365">
+            <state line="31" column="46" selection-start="991" selection-end="991" vertical-scroll-proportion="0.7357595">
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -503,7 +497,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/Web.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="0" selection-start="993" selection-end="993" vertical-scroll-proportion="0.75949365">
+        <state line="31" column="46" selection-start="991" selection-end="991" vertical-scroll-proportion="0.7357595">
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>

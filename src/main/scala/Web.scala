@@ -29,7 +29,7 @@ class Hello extends Service[HttpRequest, HttpResponse] {
   def process(req: String): Future[HttpResponse] = {
     val response = Response()
     response.setStatusCode(200)
-    val resp:String = "{\"text\": \"hey sup\"}"
+    val resp:String = "{\"text\": \"" + req + "\"}"
     response.setContentString(resp)
     Future(response)
   }
