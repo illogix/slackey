@@ -1,2 +1,0 @@
-sbt compile stage
-foreman start
