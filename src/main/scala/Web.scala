@@ -14,14 +14,14 @@ object Web {
     println("Starting on port:" + port)
     ServerBuilder()
       .codec(Http())
-      .name("hello-server")
+      .name("slackey-server")
       .bindTo(new InetSocketAddress(port))
-      .build(new Hello)
+      .build(new Slackey)
     println("Started.")
   }
 }
 
-class Hello extends Service[HttpRequest, HttpResponse] {
+class Slackey extends Service[HttpRequest, HttpResponse] {
   def apply(req: HttpRequest) = {
     val postParams:List[String] = req.getContent.toString(Charset.forName("UTF-8")).split("&").toList
     val params = postParams.map(pp => {
