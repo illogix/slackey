@@ -5,3 +5,4 @@ project/plugins/target
 .idea
 .idea_modules
 atlassian-ide-plugin.xml
+Test.sc

@@ -9,6 +9,7 @@ import java.nio.charset.Charset
 
 import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
 
+import scala.util.parsing.json.JSON
 import scalaj.http.{Http => Jhttp}
 
 import util.Properties
@@ -37,7 +38,7 @@ class Slackey extends Service[HttpRequest, HttpResponse] {
   }
 
   def convert(urlEncoded: String): String = {
-    URLDecoder.decode(urlEncoded, "UTF-8")
+    URLDecoder.decode(urlEncoded, "UTF-8").replace("\\", "\\\\").replace("\"", "\\\"")
   }
 
   def process(params: Map[String, String]): Future[HttpResponse] = {
