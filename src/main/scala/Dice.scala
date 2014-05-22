@@ -22,32 +22,35 @@ class Dice {
     }
 
     def fight(a: String, b: String): String = {
-      attack(a, b) + attack(b, a) + checkLife(a) + checkLife(b) + checkWin()
+      attack(a, b) + checkLife(a) + ", " + checkLife(b) + checkWin()
     }
 
-    def attack(attacker: String, defender: String): String = {
-      val hp: Int = players.get(defender).get
+    def attack(a: String, b: String): String = {
+      hit(a)
+      hit(b)
+      a + ":sword:" + b + "! "
+    }
+
+    def hit(player: String) = {
+      val hp: Int = players.get(player).get
       val dmg: Int = roll(10)
       val newHp: Int = hp - dmg
-
-      players = players + ((defender, newHp))
-
-      attacker + " hit " + defender + " for " + dmg + ". "
+      players = players + ((player, newHp))
     }
 
     def checkLife(player: String): String = {
       val hp: Int = players.get(player).get
       if (hp <= 0) {
         players = players - player
-        player + " is daed! :( "
+        player + ":skull:" + hp
       } else {
-        player + " has " + hp + " HP. "
+        player + ":heart_decoration:" + hp
       }
     }
 
     def checkWin(): String = {
       if (players.size == 1) {
-        val grats:String = players.keysIterator.next() + " is the winner!"
+        val grats:String = "\n" + players.keysIterator.next() + ":trophy::thumbsup:"
         players = players.empty
         grats
       } else {
@@ -58,7 +61,7 @@ class Dice {
     if (get("text").startsWith("%21start+")) {
       val playerList: List[String] = get("text").stripPrefix("%21start+").split("\\+").toList
       players = playerList.map(name => (Web.decode(name), 50)).toMap
-      post("Starting game with 50 hp for the following players: " + playerList.mkString(", "))
+      post("Starting game with 50:heart_decoration: for the following players: " + playerList.mkString(", "))
       None
     } else if (players.keySet.contains(get("user_name"))) {
       if (players.keySet.contains(get("text"))) {
