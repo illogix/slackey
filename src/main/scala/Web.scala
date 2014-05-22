@@ -29,13 +29,11 @@ class Hello extends Service[HttpRequest, HttpResponse] {
       (pair(0), pair(1))
     }).toMap
 
-    if (params.getOrElse("text", "fail").startsWith("!")) {
+    if (params.getOrElse("text", "").startsWith("%21")) {
       val resp: String = "Hi " + params.getOrElse("user_name", "unknown") + ", you said: " +
         params.getOrElse("text", "unknown")
-      println("Sending: " + resp)
       process(Some(resp))
     } else {
-      println("nothing:" + params.getOrElse("text", "blah"))
       process(None)
     }
   }

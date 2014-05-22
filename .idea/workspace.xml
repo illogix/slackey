@@ -5,13 +5,12 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/slackey.iml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/Web.scala" afterPath="$PROJECT_DIR$/src/main/scala/Web.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gogit" afterPath="$PROJECT_DIR$/gogit" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="slackey.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400724176060" ignored="false" />
-    <file path="$PROJECT_DIR$/../sherpa/atlassian-ide-plugin.xml" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400729076707" ignored="false" />
+    <file path="$PROJECT_DIR$/../sherpa/atlassian-ide-plugin.xml" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400729231464" ignored="false" />
     <file path="/Web.scala" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400729098282" ignored="false" />
     <file path="/a.dummy" changelist="7f8b1857-73e7-4d54-81df-de6ca1778a0f" time="1400724103321" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -77,7 +76,7 @@
       <file leaf-file-name="Web.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/Web.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="37" column="57" selection-start="1301" selection-end="1301" vertical-scroll-proportion="0.5490506">
+            <state line="31" column="52" selection-start="1026" selection-end="1026" vertical-scroll-proportion="0.40664557">
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -523,7 +522,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/Web.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="57" selection-start="1301" selection-end="1301" vertical-scroll-proportion="0.5490506">
+        <state line="31" column="52" selection-start="1026" selection-end="1026" vertical-scroll-proportion="0.40664557">
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
