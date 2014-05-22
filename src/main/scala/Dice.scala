@@ -50,7 +50,7 @@ class Dice {
 
     def checkWin(): String = {
       if (players.size == 1) {
-        val grats:String = "\n" + players.keysIterator.next() + ":trophy::thumbsup:"
+        val grats:String = "  " + players.keysIterator.next() + ":trophy::thumbsup:"
         players = players.empty
         grats
       } else {
