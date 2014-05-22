@@ -1,2 +1,5 @@
+#!/usr/local/bin/fish
 sbt compile stage
-
+git add .
+git commit -m "changes"
+git push heroku master

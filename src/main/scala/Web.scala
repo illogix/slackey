@@ -32,8 +32,10 @@ class Hello extends Service[HttpRequest, HttpResponse] {
     if (params.getOrElse("text", "fail").startsWith("!")) {
       val resp: String = "Hi " + params.getOrElse("user_name", "unknown") + ", you said: " +
         params.getOrElse("text", "unknown")
+      println("Sending: " + resp)
       process(Some(resp))
     } else {
+      println("nothing:" + params.getOrElse("text", "blah"))
       process(None)
     }
   }
