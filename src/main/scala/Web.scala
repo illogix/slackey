@@ -8,12 +8,15 @@ import java.nio.charset.Charset
 
 import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
 
+import scalaj.http.{Http => JHttp}
 import util.Properties
 
 object Web {
     // THESE SHOULD BE SET SOMEWHERE AS CONFIG VARS
     val outWebHookToken: String = System.getenv("OUT_WEBHOOK_TOKEN")
     val slashRollToken: String = System.getenv("SLASH_ROLL_TOKEN")
+    val slashPollToken: String = System.getenv("SLASH_POLL_TOKEN")
+    val slashVoteToken: String = System.getenv("SLASH_VOTE_TOKEN")
     val inWebHookURL: String = System.getenv("IN_WEBHOOK_URL")
 
     def decode(urlEncoded: String): String = {
@@ -27,6 +30,11 @@ object Web {
         val inside = kvs map ((kv: (String, String)) => makeInside(kv)) mkString ", "
         "{" + inside + "}"
     }
+
+    def sendToChannel(postParams: List[(String, String)]) = {
+        JHttp.post(Web.inWebHookURL).params("payload" -> Web.makeJson(postParams)).asString
+    }
+
 
     def main(args: Array[String]) {
         val port = Properties.envOrElse("PORT", "8080").toInt
@@ -42,13 +50,8 @@ object Web {
 
 class Slackey extends Service[HttpRequest, HttpResponse] {
 
-    // webHook POST example
-    //  token=abcdefghABCDEFGH12345678&team_id=T0001&team_domain=mydomain&service_id=1234567890&channel_id=C2147483705&channel_name=optimization&timestamp=1400726065.001431&user_id=U2147483697&user_name=bob&text=%21hello
-
-    // slash POST example
-    //  token=abcdefghABCDEFGH12345678&team_id=T0001&channel_id=C2147483705&channel_name=test&user_id=U2147483697&user_name=alice&command=/roll&text=maki
-
     val dice: Dice = new Dice
+    val poller: Poller = new Poller
 
     def apply(req: HttpRequest): Future[HttpResponse] = {
         val postParams: List[String] = req.getContent.toString(Charset.forName("UTF-8")).split("&").toList
@@ -81,6 +84,10 @@ class Slackey extends Service[HttpRequest, HttpResponse] {
             }
         } else if (get("token") == Web.slashRollToken) {
             respond(dice.process(params), json = false)
+        } else if (get("token") == Web.slashPollToken) {
+            respond(poller.processPoll(params), json = false)
+        } else if (get("token") == Web.slashVoteToken) {
+            respond(poller.processVote(params), json = false)
         } else {
             respond(None)
         }

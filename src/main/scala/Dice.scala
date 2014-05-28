@@ -1,5 +1,4 @@
 import scala.util.Random
-import scalaj.http.Http
 
 /**
  * @author sam
@@ -83,6 +82,6 @@ class Dice {
 
     def post(text: String) = {
         val postParams: List[(String, String)] = List(("username", "rollbot"), ("icon_emoji", ":game_die:"), ("text", text))
-        Http.post(Web.inWebHookURL).params("payload" -> Web.makeJson(postParams)).asString
+        Web.sendToChannel(postParams)
     }
 }
