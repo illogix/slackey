@@ -5,6 +5,7 @@
 class Poller {
 
     case class Poll(id: Int, author: String, question: String, choices: Array[String], anon: Boolean, timeout: Int, var votes: Map[String, String])
+
     var polls: List[Poll] = List()
 
     def processPoll(params: Map[String, String]): Option[String] = {
@@ -13,7 +14,7 @@ class Poller {
         }
 
         def getPollSummary(p: Poll): String = {
-            (if (p.anon) "Anonymous poll! " else p.author + " asks: ") + p.question + " (ttl=" + p.timeout + ").  Choices: " + p.choices.mkString(", ") + ".  Type \"/vote " + p.id + " <choice>\" to vote!"
+            (if (p.anon) "Anonymous poll! " else p.author + " asks: ") + p.question + " (ttl=" + p.timeout + "s).  Choices: " + p.choices.mkString(", ") + ".  Type \"/vote " + p.id + " <choice>\" to vote!"
         }
 
         def processNewPoll(params: String, anon: Boolean): Option[String] = {
@@ -22,9 +23,9 @@ class Poller {
             val timeoutParam: String = if (firstQuoteIndex != -1) params.substring(0, firstQuoteIndex).trim else "300"
             val timeout: Int = if (timeoutParam.forall(_.isDigit)) timeoutParam.toInt else 300
             val question: String = if (lastQuoteIndex > firstQuoteIndex) params.substring(firstQuoteIndex + 1, lastQuoteIndex) else ""
-            val choices: Array[String] = if (params.length > lastQuoteIndex+1) params.substring(lastQuoteIndex+1).split(",").map(_.trim) else Array()
+            val choices: Array[String] = if (params.length > lastQuoteIndex + 1) params.substring(lastQuoteIndex + 1).split(",").map(_.trim) else Array()
             if (choices.length > 0) {
-                val newPoll = Poll(polls.length+1, get("user_name"), question, choices, anon, timeout, Map())
+                val newPoll = Poll(polls.length + 1, get("user_name"), question, choices, anon, timeout, Map())
                 polls = polls :+ newPoll
                 post(getPollSummary(newPoll))
                 None
@@ -50,7 +51,7 @@ class Poller {
         } else if (command.startsWith("list")) {
             Some("Active polls: <not implemented yet>")
         } else if (command.startsWith("help ")) {
-            val helpCommand: String = get("text").stripPrefix("help ").trim
+            val helpCommand: String = command.stripPrefix("help ").trim
             val directMessage: String = if (helpCommand == "newanon") {
                 "Creates a new anonymous poll.  The poll creator and voters will not be identified.\nUsage: /poll newanon <ttl in seconds> \"Poll question\" <comma-separated list of choices>\nExample: /poll newanon 60 \"Whose mom is hottest?\" alice, bob, carol"
             } else if (helpCommand == "new") {
@@ -74,7 +75,7 @@ class Poller {
             params.getOrElse(key, "(unknown " + key + ")")
         }
 
-        val voteParams:Array[String] = Web.decode(get("text")).trim.split(" ", 1)
+        val voteParams: Array[String] = Web.decode(get("text")).trim.split(" ", 2)
         if (voteParams.length == 2 && voteParams(0).forall(_.isDigit)) {
             polls.find(_.id.toString == voteParams(0)) match {
                 case Some(p: Poll) => if (p.choices.contains(voteParams(1))) {
