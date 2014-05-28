@@ -21,7 +21,7 @@ class Poller {
             val timeout: Int = if (timeoutParam.forall(_.isDigit)) timeoutParam.toInt else 300
             val question: String = if (lastQuoteIndex > firstQuoteIndex) params.substring(firstQuoteIndex + 1, lastQuoteIndex) else ""
             val pollid: Int = 123
-            val postMessage: String = get("user_name") + " asks: " + question + "\nType \"/poll view " + pollid + "\" to participate!"
+            val postMessage: String = get("user_name") + " asks: " + question + "\nType '/poll view " + pollid + "' to participate!"
             post(postMessage)
             None
         }
