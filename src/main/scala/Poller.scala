@@ -18,8 +18,8 @@ class Poller {
             val question: String = params
             val timeout: Int = 123
             val pollid: Int = 123
-            val postMessage: String = (if (anon) "Anonymous poll! " else user + " asks: ") + question + " (ttl:" + timeout + "s)\nType \"/poll view " + pollid + "\" to participate!"
-            post(postMessage)
+//            val postMessage: String = user + " asks: " + question + " (ttl:" + timeout + "s)\nType \"/poll view " + pollid + "\" to participate!"
+            post("test:" + question)
             None
         }
 
