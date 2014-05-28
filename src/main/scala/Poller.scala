@@ -14,30 +14,33 @@ class Poller {
             s.startsWith(cmd) || s.startsWith(cmd, 1)
         }
 
-        def newPoll(user: String, params: String, anon: Boolean): Option[String] = {
-            val question: String = params
-            val timeout: Int = 123
+        def newPoll(params: String, anon: Boolean): Option[String] = {
+            val firstQuoteIndex = params.indexOf('\"')
+            val lastQuoteIndex = params.lastIndexOf('\"')
+            val timeoutParam: String = if (firstQuoteIndex != -1) params.substring(0, firstQuoteIndex).trim else "300"
+            val timeout: Int = if (timeoutParam.forall(_.isDigit)) timeoutParam.toInt else 300
+            val question: String = if (lastQuoteIndex > firstQuoteIndex) params.substring(firstQuoteIndex + 1, lastQuoteIndex) else ""
             val pollid: Int = 123
-//            val postMessage: String = user + " asks: " + question + " (ttl:" + timeout + "s)\nType \"/poll view " + pollid + "\" to participate!"
-            post("test:" + question)
+            val postMessage: String = get("user_name") + " asks: " + question + "\nType \"/poll view " + pollid + "\" to participate!"
+            post(postMessage)
             None
         }
 
-        val command: String = get("text").trim
-        if (command.startsWith("%21new+")) {
-            newPoll(get("user_name"), command.stripPrefix("%21new+").trim, anon = false)
-        } else if (command.startsWith("%21newanon+")) {
-            newPoll("Anonymous Coward", command.stripPrefix("%21newanon+").trim, anon = true)
-        } else if (command.startsWith("%21view+")) {
+        val command: String = Web.decode(get("text")).trim
+        if (command.startsWith("!new ")) {
+            newPoll(command.stripPrefix("!new ").trim, anon = false)
+        } else if (command.startsWith("!newanon ")) {
+            newPoll(command.stripPrefix("!newanon ").trim, anon = true)
+        } else if (command.startsWith("!view ")) {
             Some("Poll details: <not implemented yet>")
-        } else if (command.startsWith("%21list+")) {
+        } else if (command.startsWith("!list")) {
             Some("Active polls: <not implemented yet>")
-        } else if (command.startsWith("%21help+")) {
+        } else if (command.startsWith("!help ")) {
             val helpCommand: String = get("text").stripPrefix("%21help+")
             val directMessage: String = if (startsWithCommand(helpCommand, "newanon")) {
                 "Creates a new anonymous poll.  The poll creator and voters will not be identified.\nUsage: /poll !newanon <ttl in seconds> \"Poll question\" <comma-separated list of choices>\nExample: /poll !newanon 60 \"Whose mom is hottest?\" alice, bob, carol"
             } else if (startsWithCommand(helpCommand, "new")) {
-                "Creates a new poll.\nUsage: /poll !new <ttl in seconds> \"Poll question\" <comma-separated list of choices>\nExample: /poll !new 120 \"What should I drink?\" coke, coffee, water, suicide"
+                "Creates a new poll.\nUsage: /poll !new [ttl in seconds (default 300)] \"Poll question\" <comma-separated list of choices>\nExample: /poll !new 120 \"What should I drink?\" coke, coffee, water, suicide"
             } else if (startsWithCommand(helpCommand, "view")) {
                 "Views an existing poll with responses so far.\nUsage: /poll !view <poll id>\nExample: /poll !view 19"
             } else if (startsWithCommand(helpCommand, "list")) {
