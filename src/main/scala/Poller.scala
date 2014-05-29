@@ -18,20 +18,22 @@ class Poller {
         }
 
         def getPollSummary(p: Poll): String = {
-            val s1: String = (if (p.anon) "Anonymous poll! " else p.author + " asks: ") + p.question
+            val s1: String = (if (p.anon) "Anonymous poll: " else p.author + " asks: ") + p.question
             val sTimeout: String = " (ttl=" + (if (p.timeout == 0) "infinite" else p.timeout + "s") + "). "
             val sChoices: String = "Choices: " + printChoices(p.choices) + ". "
             val sVote: String = "Type \"/vote " + p.id + " <choice_letter>\" to vote!"
             s1 + sTimeout + sChoices + sVote
         }
 
-        def getNames(votes: Map[String, Int], choice: Int): String = {
-            val names: String = votes.collect { case si: (String, Int) if si._2 == choice => si._1 }.mkString(", ")
-            if (names.nonEmpty) "(" + names + ")" else ""
+        def getNames(p: Poll, choice: Int): String = {
+            if (p.anon) "" else {
+                val names: String = p.votes.collect { case si: (String, Int) if si._2 == choice => si._1 }.mkString(", ")
+                if (names.nonEmpty) " (" + names + ")" else ""
+            }
         }
 
         def getPollResults(p: Poll): String = {
-            (for (i <- p.choices.indices) yield "\n" + p.choices(i) + ": " + p.votes.count(_._2 == i) + getNames(p.votes, i)).mkString("\n")
+            (for (i <- p.choices.indices) yield "\n" + p.choices(i) + ": " + p.votes.count(_._2 == i) + getNames(p, i)).mkString("\n")
         }
 
         def processNewPoll(params: String, anon: Boolean): Option[String] = {
