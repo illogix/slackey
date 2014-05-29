@@ -18,15 +18,20 @@ class Poller {
         }
 
         def getPollSummary(p: Poll): String = {
-            val s1: String = if (p.anon) "Anonymous poll! " else p.author + " asks: " + p.question
+            val s1: String = (if (p.anon) "Anonymous poll! " else p.author + " asks: ") + p.question
             val sTimeout: String = " (ttl=" + (if (p.timeout == 0) "infinite" else p.timeout + "s") + "). "
             val sChoices: String = "Choices: " + printChoices(p.choices) + ". "
             val sVote: String = "Type \"/vote " + p.id + " <choice_letter>\" to vote!"
             s1 + sTimeout + sChoices + sVote
         }
 
+        def getNames(votes: Map[String, Int], choice: Int): String = {
+            val names: String = votes.collect { case si: (String, Int) if si._2 == choice => si._1 }.mkString(", ")
+            if (names.nonEmpty) "(" + names + ")" else ""
+        }
+
         def getPollResults(p: Poll): String = {
-            (for (i <- p.choices.indices) yield "\n" + ('a' + i).toChar + ": " + p.votes.count(_._2 == i)).mkString("\n")
+            (for (i <- p.choices.indices) yield "\n" + p.choices(i) + ": " + p.votes.count(_._2 == i) + getNames(p.votes, i)).mkString("\n")
         }
 
         def processNewPoll(params: String, anon: Boolean): Option[String] = {
@@ -36,7 +41,7 @@ class Poller {
             val timeout: Int = if (timeoutParam.forall(_.isDigit)) timeoutParam.toInt else 0
             val question: String = if (lastQuoteIndex > firstQuoteIndex) params.substring(firstQuoteIndex + 1, lastQuoteIndex) else ""
             val choices: Array[String] = if (params.length > lastQuoteIndex + 1) params.substring(lastQuoteIndex + 1).split(",").map(_.trim) else Array()
-            if (choices.length > 0) {
+            if (lastQuoteIndex > firstQuoteIndex && choices.length > 0) {
                 val newPoll = Poll(polls.length + 1, get("user_name"), question, choices, anon, timeout, Map())
                 polls = polls :+ newPoll
                 post(getPollSummary(newPoll))
@@ -94,7 +99,7 @@ class Poller {
                     val i: Int = voteParams(1).trim.charAt(0).toLower - 'a'
                     if (i >= 0 && p.choices.length > i) {
                         p.votes = p.votes + (get("user_name") -> i)
-                        Some("Vote cast for " + p.choices(i) + "!")
+                        Some("Vote cast for \"" + p.choices(i) + "\"!")
                     } else {
                         Some(voteParams(1) + " is not a valid choice!")
                     }
