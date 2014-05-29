@@ -18,7 +18,11 @@ class Poller {
         }
 
         def getPollSummary(p: Poll): String = {
-            (if (p.anon) "Anonymous poll! " else p.author + " asks: ") + p.question + " (ttl=" + p.timeout + "s).  Choices: " + printChoices(p.choices) + ".  Type \"/vote " + p.id + " <choice_letter>\" to vote!"
+            val s1: String = if (p.anon) "Anonymous poll! " else p.author + " asks: " + p.question
+            val sTimeout: String = " (ttl=" + (if (p.timeout == 0) "infinite" else p.timeout + "s") + "). "
+            val sChoices: String = "Choices: " + printChoices(p.choices) + ". "
+            val sVote: String = "Type \"/vote " + p.id + " <choice_letter>\" to vote!"
+            s1 + sTimeout + sChoices + sVote
         }
 
         def getPollResults(p: Poll): String = {
@@ -88,9 +92,9 @@ class Poller {
             polls.find(_.id.toString == voteParams(0)) match {
                 case Some(p: Poll) => {
                     val i: Int = voteParams(1).trim.charAt(0).toLower - 'a'
-                    if (p.choices.length > i) {
+                    if (i >= 0 && p.choices.length > i) {
                         p.votes = p.votes + (get("user_name") -> i)
-                        Some("Vote cast!")
+                        Some("Vote cast for " + p.choices(i) + "!")
                     } else {
                         Some(voteParams(1) + " is not a valid choice!")
                     }
