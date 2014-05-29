@@ -19,10 +19,10 @@ class Poller {
 
         def getPollSummary(p: Poll): String = {
             val s1: String = (if (p.anon) "Anonymous poll: " else p.author + " asks: ") + p.question
-            val sTimeout: String = " (ttl=" + (if (p.timeout == 0) "infinite" else p.timeout + "s") + "). "
             val sChoices: String = "Choices: " + printChoices(p.choices) + ". "
+            val sTimeout: String = "ttl=" + (if (p.timeout == 0) "infinite" else p.timeout + "s") + ". "
             val sVote: String = "Type \"/vote " + p.id + " <choice_letter>\" to vote!"
-            s1 + sTimeout + sChoices + sVote
+            s1 + sChoices + sTimeout + sVote
         }
 
         def getNames(p: Poll, choice: Int): String = {
@@ -40,7 +40,7 @@ class Poller {
             val firstQuoteIndex: Int = params.indexOf('\"')
             val lastQuoteIndex: Int = params.lastIndexOf('\"')
             val timeoutParam: String = if (firstQuoteIndex > 0) params.substring(0, firstQuoteIndex).trim else "0"
-            val timeout: Int = if (timeoutParam.forall(_.isDigit)) timeoutParam.toInt else 0
+            val timeout: Int = if (timeoutParam.forall(_.isDigit) && timeoutParam.length <= 8) timeoutParam.toInt else 0
             val question: String = if (lastQuoteIndex > firstQuoteIndex) params.substring(firstQuoteIndex + 1, lastQuoteIndex) else ""
             val choices: Array[String] = if (params.length > lastQuoteIndex + 1) params.substring(lastQuoteIndex + 1).split(",").map(_.trim) else Array()
             if (lastQuoteIndex > firstQuoteIndex && choices.length > 0) {
