@@ -18,11 +18,11 @@ class Poller {
         }
 
         def getPollSummary(p: Poll): String = {
-            val s1: String = (if (p.anon) "Anonymous poll: " else p.author + " asks: ") + p.question
-            val sChoices: String = "Choices: " + printChoices(p.choices) + ". "
-            val sTimeout: String = "ttl=" + (if (p.timeout == 0) "infinite" else p.timeout + "s") + ". "
+            val s1: String = (if (p.anon) "Anonymous poll: " else p.author + " asks: ") + "\"" + p.question + "\""
+            val sChoices: String = " Choices: " + printChoices(p.choices) + ". "
             val sVote: String = "Type \"/vote " + p.id + " <choice_letter>\" to vote!"
-            s1 + sChoices + sTimeout + sVote
+            val sTimeout: String = " (ttl=" + (if (p.timeout == 0) "infinite" else p.timeout + "s") + ")"
+            s1 + sChoices + sVote + sTimeout
         }
 
         def getNames(p: Poll, choice: Int): String = {
