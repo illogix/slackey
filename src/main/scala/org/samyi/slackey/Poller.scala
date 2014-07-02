@@ -31,10 +31,14 @@ class Poller {
 
         def votesFor(choice: String) = {
             val votes = res.getOrElse(choice, List())
-            votes.size.toString + (if (p.anon) "" else " (" + votes.map(_.voter).mkString(", ") + ")")
+            votes.size.toString +
+                (if (p.anon || votes.size == 0) "" else " (" + votes.map(_.voter).mkString(", ") + ")")
         }
 
-        (for (c <- p.choices) yield "\n" + c + ": " + votesFor(c)).mkString("\n")
+        val lines = for (i <- p.choices.indices; c = p.choices(i))
+                    yield "\n(" + ('a' + i).toChar + ") " + c + ": " + votesFor(c)
+
+        lines.mkString("\n")
     }
 
     def processNewPoll(params: String, anon: Boolean, author: String, channel: String): Option[String] = {
