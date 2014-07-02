@@ -1,3 +1,5 @@
+package org.samyi.slackey
+
 import com.twitter.finagle.builder.ServerBuilder
 import com.twitter.finagle.http.{Http, Response}
 import com.twitter.finagle.Service
@@ -18,6 +20,9 @@ object Web {
     val slashPollToken: String = System.getenv("SLASH_POLL_TOKEN")
     val slashVoteToken: String = System.getenv("SLASH_VOTE_TOKEN")
     val inWebHookURL: String = System.getenv("IN_WEBHOOK_URL")
+    val mongoURI: String = System.getenv("MONGO_MACK_URI")
+    val mongoDbName: String = System.getenv("MONGO_MACK_DB")
+
 
     def decode(urlEncoded: String): String = {
         URLDecoder.decode(urlEncoded, "UTF-8")

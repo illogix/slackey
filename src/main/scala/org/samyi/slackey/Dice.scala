@@ -1,3 +1,5 @@
+package org.samyi.slackey
+
 import scala.util.Random
 
 /**
