@@ -14,7 +14,7 @@ import scalaj.http.{Http => JHttp}
 import util.Properties
 
 object Web {
-    // THESE SHOULD BE SET SOMEWHERE AS CONFIG VARS
+    // These should be set in Heroku as config vars
     val outWebHookToken: String = System.getenv("OUT_WEBHOOK_TOKEN")
     val slashRollToken: String = System.getenv("SLASH_ROLL_TOKEN")
     val slashPollToken: String = System.getenv("SLASH_POLL_TOKEN")
@@ -56,7 +56,7 @@ object Web {
 class Slackey extends Service[HttpRequest, HttpResponse] {
 
     val dice: Dice = new Dice
-    val poller: Poller = new Poller
+//    val poller: Poller = new Poller
 
     def apply(req: HttpRequest): Future[HttpResponse] = {
         val postParams: List[String] = req.getContent.toString(Charset.forName("UTF-8")).split("&").toList
@@ -75,26 +75,12 @@ class Slackey extends Service[HttpRequest, HttpResponse] {
             params.getOrElse(key, "(unknown " + key + ")")
         }
 
-        if (get("token") == Web.outWebHookToken) {
-            if (get("text").startsWith("%21")) {
-                // trigger: starts with !
-                val resp: String = "Hi " + get("user_name") + ", you said: " + Web.decode(get("text")).substring(1)
-                respond(Some(resp))
-            } else if (get("text").startsWith("%24")) {
-                // trigger: starts with $
-                val resp: String = get("user_name") + " talkin bout " + Web.decode(get("text")).substring(1) + " dollars"
-                respond(Some(resp))
-            } else {
-                respond(None)
-            }
-        } else if (get("token") == Web.slashRollToken) {
-            respond(dice.process(params), json = false)
-        } else if (get("token") == Web.slashPollToken) {
-            respond(poller.processPoll(params), json = false)
-        } else if (get("token") == Web.slashVoteToken) {
-            respond(poller.processVote(params), json = false)
-        } else {
-            respond(None)
+        get("token") match {
+            case Web.outWebHookToken => respond(None)
+            case Web.slashRollToken => respond(dice.process(params), json = false)
+            case Web.slashPollToken => respond(Poller.poller.processPoll(params), json = false)
+            case Web.slashVoteToken => respond(Poller.poller.processVote(params), json = false)
+            case _ => respond(None)
         }
     }
 

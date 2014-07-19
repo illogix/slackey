@@ -47,6 +47,11 @@ class PollDBConnection(uri: String, dbname: String) {
         }
     }
 
+    def getPolls: Iterator[Poll] = {
+        val query = MongoDBObject()
+        for (dbo <- polldb.find(query)) yield dboToPoll(dbo)
+    }
+
     def getActivePolls: Iterator[Poll] = {
         val query = MongoDBObject("expired" -> false)
         for (dbo <- polldb.find(query)) yield dboToPoll(dbo)
