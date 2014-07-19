@@ -56,7 +56,6 @@ object Web {
 class Slackey extends Service[HttpRequest, HttpResponse] {
 
     val dice: Dice = new Dice
-//    val poller: Poller = new Poller
 
     def apply(req: HttpRequest): Future[HttpResponse] = {
         val postParams: List[String] = req.getContent.toString(Charset.forName("UTF-8")).split("&").toList
