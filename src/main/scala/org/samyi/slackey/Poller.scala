@@ -1,6 +1,6 @@
 package org.samyi.slackey
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{ActorSystem, Props}
 
 /**
  * @author sam
@@ -11,14 +11,12 @@ case class Poll(id: Int, question: String, choices: List[String], anon: Boolean,
 
 case class Vote(pollId: Int, voter: String, choice: String, time: Long)
 
-case class Expiry(poll: Poll)
-
 object Poller {
     val poller = new Poller
     poller.registerPolls()
 }
 
-class Poller extends Actor {
+class Poller {
 
     val db = new PollDBConnection(Web.mongoURI, Web.mongoDbName)
 
@@ -174,10 +172,4 @@ class Poller extends Actor {
         val postParams: List[(String, String)] = List(("username", "pollbot"), ("icon_emoji", ":bar_chart:"), ("text", text))
         Web.sendToChannel(postParams)
     }
-
-    // Actor
-    def receive = {
-        case Expiry(poll) => expirePoll(poll)
-    }
-
 }

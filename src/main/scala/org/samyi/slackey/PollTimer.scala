@@ -9,6 +9,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
  *
  */
 
+case class Expiry(poll: Poll)
+
 class PollTimer extends Actor with ActorLogging {
 
     override def preStart() = {
@@ -18,7 +20,7 @@ class PollTimer extends Actor with ActorLogging {
     def receive = {
         case Expiry(poll) => {
             val delayMs = Math.max(0, poll.start + (poll.timeout * 1000) - System.currentTimeMillis())
-            context.system.scheduler.scheduleOnce(Duration(delayMs, MILLISECONDS), self, sender ! Expiry(poll))
+            context.system.scheduler.scheduleOnce(Duration(delayMs, MILLISECONDS), self, Poller.poller.expirePoll(poll))
         }
     }
 }
