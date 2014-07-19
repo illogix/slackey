@@ -77,8 +77,8 @@ class Slackey extends Service[HttpRequest, HttpResponse] {
         get("token") match {
             case Web.outWebHookToken => respond(None)
             case Web.slashRollToken => respond(dice.process(params), json = false)
-            case Web.slashPollToken => respond(Poller.poller.processPoll(params), json = false)
-            case Web.slashVoteToken => respond(Poller.poller.processVote(params), json = false)
+            case Web.slashPollToken => respond(Poller.processPoll(params), json = false)
+            case Web.slashVoteToken => respond(Poller.processVote(params), json = false)
             case _ => respond(None)
         }
     }

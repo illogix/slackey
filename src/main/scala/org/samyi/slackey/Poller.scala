@@ -12,11 +12,11 @@ case class Poll(id: Int, question: String, choices: List[String], anon: Boolean,
 case class Vote(pollId: Int, voter: String, choice: String, time: Long)
 
 object Poller {
-    val poller = new Poller
-    poller.registerPolls()
-}
-
-class Poller {
+//    val poller = new Poller
+//    poller.registerPolls()
+//}
+//
+//class Poller {
 
     val db = new PollDBConnection(Web.mongoURI, Web.mongoDbName)
 
