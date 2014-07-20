@@ -26,7 +26,7 @@ object Poller {
 
     def getPollSummary(p: Poll): String = {
         val auth = if (p.anon) "Anonymous poll:" else s"${p.author} asks:"
-        "(Poll " + p.id + ") " + auth + "\"" + p.question + "\""
+        "(Poll " + p.id + ") " + auth + " \"" + p.question + "\""
     }
 
     def getPollDetails(p: Poll): String = {
