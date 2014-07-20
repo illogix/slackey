@@ -105,6 +105,7 @@ object Poller {
     def expirePoll(p: Poll) = {
         post(getPollSummary(p) + " has expired!  Results:\n" + getPollResults(p))
 //        db.expirePoll(p.id)
+        ()
     }
 
     def registerExpiry(p: Poll) = pollTimer ! Expiry(p)

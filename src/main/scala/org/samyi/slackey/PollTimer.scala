@@ -21,7 +21,7 @@ class PollTimer extends Actor with ActorLogging {
         case Expiry(poll) => {
             val delayMs = Math.max(0, poll.start + (poll.timeout * 1000) - System.currentTimeMillis())
             log.info(s"Poll ${poll.id}: delayMs=$delayMs")
-            context.system.scheduler.scheduleOnce(Duration(delayMs, MILLISECONDS), self, Poller.expirePoll(poll))
+            context.system.scheduler.scheduleOnce(Duration(delayMs, MILLISECONDS))(Poller.expirePoll(poll))
         }
     }
 }
