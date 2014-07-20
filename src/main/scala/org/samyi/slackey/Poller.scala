@@ -25,7 +25,7 @@ object Poller {
     }
 
     def getPollSummary(p: Poll): String = {
-        "Poll " + p.id + ":" + (if (p.anon) "Anonymous poll: " else p.author + " asks: ") + "\"" + p.question + "\""
+        "(Poll " + p.id + ") " + (if (p.anon) "Anonymous poll: " else p.author + " asks: ") + "\"" + p.question + "\""
     }
 
     def getPollDetails(p: Poll): String = {
@@ -45,17 +45,17 @@ object Poller {
         }
 
         val lines = for (i <- p.choices.indices; c = p.choices(i))
-        yield "\n(" + ('a' + i).toChar + ") " + c + ": " + votesFor(c)
+        yield s"\n(${('a' + i).toChar}) $c: ${votesFor(c)}"
 
         lines.mkString("\n")
     }
 
     def getPollWinners(p: Poll): String = {
         val res: Map[String, List[Vote]] = db.getResults(p)
-        val counts = res.map(c => c._2.length)
-        val winCount = counts.max
-        val winners = res.filter(c => c._2.length == winCount)
-        winners.keys.mkString(", ")
+        val winCount = res.map(c => c._2.length).max
+        def style(c: (String, List[Vote])) = if (c._2.length == winCount) "*" else ""
+
+        res.map(c => s"${style(c)}${c._1} (${c._2})${style(c)}").mkString(", ")
     }
 
     def processNewPoll(params: String, anon: Boolean, author: String, channel: String): Option[String] = {
