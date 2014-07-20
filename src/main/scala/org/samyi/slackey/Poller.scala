@@ -35,7 +35,7 @@ object Poller {
         getPollSummary(p) + sChoices + sVote + sTimeout
     }
 
-    def getPollResults(p: Poll): String = {
+    def getPollTally(p: Poll): String = {
         val res: Map[String, List[Vote]] = db.getResults(p.id)
 
         def votesFor(choice: String) = {
@@ -48,6 +48,14 @@ object Poller {
         yield "\n(" + ('a' + i).toChar + ") " + c + ": " + votesFor(c)
 
         lines.mkString("\n")
+    }
+
+    def getPollWinners(p: Poll): String = {
+        val res: Map[String, List[Vote]] = db.getResults(p.id)
+        val counts = res.map(c => c._2.length)
+        val winCount = counts.max
+        val winners = res.filter(c => c._2.length == winCount)
+        winners.keys.mkString(", ")
     }
 
     def processNewPoll(params: String, anon: Boolean, author: String, channel: String): Option[String] = {
@@ -72,7 +80,7 @@ object Poller {
     def viewPoll(arg: String): String = {
         if (arg.forall(_.isDigit)) {
             db.getPoll(arg.toInt) match {
-                case Some(poll) => getPollDetails(poll) + "\n" + getPollResults(poll)
+                case Some(poll) => getPollDetails(poll) + "\n" + getPollTally(poll)
                 case None => "Poll id " + arg + " not found!"
             }
         } else {
@@ -103,9 +111,8 @@ object Poller {
     }
 
     def expirePoll(p: Poll) = {
-        post(getPollSummary(p) + " has expired!  Results:\n" + getPollResults(p))
-//        db.expirePoll(p.id)
-        ()
+        db.expirePoll(p.id)
+        post(getPollSummary(p) + " has expired!  Results: " + getPollWinners(p))
     }
 
     def registerExpiry(p: Poll) = pollTimer ! Expiry(p)
