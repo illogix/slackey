@@ -55,7 +55,7 @@ object Poller {
         val winCount = res.map(c => c._2.length).max
         def style(c: (String, List[Vote])) = if (c._2.length == winCount) "*" else ""
 
-        res.map(c => s"${style(c)}${c._1} (${c._2})${style(c)}").mkString(", ")
+        res.map(c => s"${style(c)}${c._1} (${c._2.length})${style(c)}").mkString(", ")
     }
 
     def processNewPoll(params: String, anon: Boolean, author: String, channel: String): Option[String] = {
@@ -96,18 +96,17 @@ object Poller {
         } else if (command == "view") {
             "Views an existing poll with responses so far.\nUsage: /poll view <poll id>\nExample: /poll view 19"
         } else if (command == "list") {
-            "Lists all active polls.\nUsage: /poll list"
+            "Lists all active polls. Specify \"all\" to view all polls.  \nUsage: /poll list [all]"
         } else {
             "Supported commands: new, newanon, view, list.  Type /poll help <command> for info."
         }
     }
 
-    def activePolls: String = {
-        db.getActivePolls.map(p => getPollSummary(p)).mkString("\n")
-    }
-
-    def allPolls: String = {
-        db.getPolls.map(p => getPollSummary(p)).mkString("\n")
+    def listPolls(arg: String): String = {
+        if (arg.startsWith("all"))
+            db.getPolls.map(p => getPollSummary(p)).mkString("\n")
+        else
+            db.getActivePolls.map(p => getPollSummary(p)).mkString("\n")
     }
 
     def expirePoll(p: Poll) = {
@@ -132,9 +131,7 @@ object Poller {
         } else if (command.startsWith("view ")) {
             Some(viewPoll(command.stripPrefix("view ").trim))
         } else if (command.startsWith("list")) {
-            Some(activePolls)
-        } else if (command.startsWith("history")) {
-            Some(allPolls)
+            Some(listPolls(command.stripPrefix("list ").trim))
         } else if (command.startsWith("help ")) {
             val helpCommand: String = command.stripPrefix("help ").trim
             Some(getHelp(helpCommand))

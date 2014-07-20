@@ -60,7 +60,7 @@ class PollDBConnection(uri: String, dbname: String) {
     def expirePoll(pollId: Int) = {
         val query = MongoDBObject("_id" -> pollId)
         val upd = $set("expired" -> true)
-        votedb.update(query, upd)
+        polldb.update(query, upd)
     }
 
     def addPoll(poll: Poll) = {
