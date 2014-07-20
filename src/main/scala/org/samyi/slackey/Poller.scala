@@ -21,17 +21,18 @@ object Poller {
     // Poll functions
 
     def printChoices(p: Poll): String = {
-        (for (i <- p.choices.indices) yield "(" + ('a' + i).toChar + ") " + p.choices(i)).mkString(", ")
+        (for (i <- p.choices.indices) yield s"(${('a'+i).toChar}) ${p.choices(i)}").mkString(", ")
     }
 
     def getPollSummary(p: Poll): String = {
-        "(Poll " + p.id + ") " + (if (p.anon) "Anonymous poll: " else p.author + " asks: ") + "\"" + p.question + "\""
+        val auth = if (p.anon) "Anonymous poll:" else s"${p.author} asks:"
+        "(Poll " + p.id + ") " + auth + "\"" + p.question + "\""
     }
 
     def getPollDetails(p: Poll): String = {
-        val sChoices: String = " Choices: " + printChoices(p) + ". "
-        val sVote: String = "Type \"/vote " + p.id + " <choice_letter>\" to vote!"
-        val sTimeout: String = " (ttl=" + (if (p.timeout == 0) "infinite" else p.timeout + "s") + ")"
+        val sChoices: String = s" Choices: ${printChoices(p)}. "
+        val sVote: String = "\"/vote " + p.id + " <choice_letter>\" to vote!"
+        val sTimeout: String = s" (ttl=${if (p.timeout == 0) "infinite" else s"${p.timeout}s"})"
         getPollSummary(p) + sChoices + sVote + sTimeout
     }
 
@@ -41,7 +42,7 @@ object Poller {
         def votesFor(choice: String) = {
             val votes = res.getOrElse(choice, List())
             votes.size.toString +
-                (if (p.anon || votes.size == 0) "" else " (" + votes.map(_.voter).mkString(", ") + ")")
+                (if (p.anon || votes.size == 0) "" else s" (${votes.map(_.voter).mkString(", ")})")
         }
 
         val lines = for (i <- p.choices.indices; c = p.choices(i))
@@ -103,27 +104,29 @@ object Poller {
     }
 
     def listPolls(arg: String): String = {
-        val intro = "Active polls: "
-        val polls = if (arg.startsWith("all"))
+        val all = arg.startsWith("all")
+        val polls = if (all)
             db.getPolls.map(p => getPollSummary(p)).mkString("\n")
         else
             db.getActivePolls.map(p => getPollSummary(p)).mkString("\n")
+
+        val intro = if (all) "All polls: " else "Active polls: "
 
         intro + (if (polls.isEmpty) "(none)" else s"\n$polls")
     }
 
     def expirePoll(p: Poll) = {
         db.expirePoll(p.id)
-        post(getPollSummary(p) + " has expired!  Results: " + getPollWinners(p))
+        post(s"${getPollSummary(p)} has expired!  Results: ${getPollWinners(p)}")
     }
 
-    def registerExpiry(p: Poll) = pollTimer ! Expiry(p)
+    def registerExpiry(p: Poll) = if (p.timeout != 0) pollTimer ! Expiry(p)
 
     def registerExpiries() = db.getActivePolls foreach registerExpiry
 
     def processPoll(params: Map[String, String]): Option[String] = {
         def get(key: String): String = {
-            params.getOrElse(key, "(unknown " + key + ")")
+            params.getOrElse(key, s"(unknown $key)")
         }
 
         val command: String = Web.decode(get("text")).trim
@@ -148,7 +151,7 @@ object Poller {
     // Vote functions
     def processVote(params: Map[String, String]): Option[String] = {
         def get(key: String): String = {
-            params.getOrElse(key, "(unknown " + key + ")")
+            params.getOrElse(key, s"(unknown $key)")
         }
 
         val voteParams: Array[String] = Web.decode(get("text")).trim.split(" ", 2)
@@ -158,15 +161,15 @@ object Poller {
                 case Some(p: Poll) => {
                     val i: Int = voteParams(1).trim.charAt(0).toLower - 'a'
                     if (p.expired) {
-                        Some("Sorry, that poll expired!")
+                        Some(s"Sorry, poll ${p.id} expired!")
                     } else if (i >= 0 && p.choices.length > i) {
                         db.vote(Vote(pollId, get("user_name"), p.choices(i), System.currentTimeMillis()))
                         Some("Vote cast for \"" + p.choices(i) + "\"!")
                     } else {
-                        Some(voteParams(1) + " is not a valid choice!")
+                        Some(s"${voteParams(1)} is not a valid choice!")
                     }
                 }
-                case None => Some("Poll id " + voteParams(0) + " not found!")
+                case None => Some(s"Poll id ${voteParams(0)} not found!")
             }
         } else {
             Some("Invalid vote.  Correct format is: /vote <poll_id> <choice_letter>")
