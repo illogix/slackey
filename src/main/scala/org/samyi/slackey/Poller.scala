@@ -103,10 +103,13 @@ object Poller {
     }
 
     def listPolls(arg: String): String = {
-        if (arg.startsWith("all"))
+        val intro = "Active polls: "
+        val polls = if (arg.startsWith("all"))
             db.getPolls.map(p => getPollSummary(p)).mkString("\n")
         else
             db.getActivePolls.map(p => getPollSummary(p)).mkString("\n")
+
+        intro + (if (polls.isEmpty) "(none)" else s"\n$polls")
     }
 
     def expirePoll(p: Poll) = {
@@ -154,7 +157,9 @@ object Poller {
             db.getPoll(pollId) match {
                 case Some(p: Poll) => {
                     val i: Int = voteParams(1).trim.charAt(0).toLower - 'a'
-                    if (i >= 0 && p.choices.length > i) {
+                    if (p.expired) {
+                        Some("Sorry, that poll expired!")
+                    } else if (i >= 0 && p.choices.length > i) {
                         db.vote(Vote(pollId, get("user_name"), p.choices(i), System.currentTimeMillis()))
                         Some("Vote cast for \"" + p.choices(i) + "\"!")
                     } else {
