@@ -36,7 +36,7 @@ object Poller {
     }
 
     def getPollTally(p: Poll): String = {
-        val res: Map[String, List[Vote]] = db.getResults(p.id)
+        val res: Map[String, List[Vote]] = db.getResults(p)
 
         def votesFor(choice: String) = {
             val votes = res.getOrElse(choice, List())
@@ -51,7 +51,7 @@ object Poller {
     }
 
     def getPollWinners(p: Poll): String = {
-        val res: Map[String, List[Vote]] = db.getResults(p.id)
+        val res: Map[String, List[Vote]] = db.getResults(p)
         val counts = res.map(c => c._2.length)
         val winCount = counts.max
         val winners = res.filter(c => c._2.length == winCount)

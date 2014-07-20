@@ -50,6 +50,12 @@ object Web {
             .bindTo(new InetSocketAddress(port))
             .build(new Slackey)
         println("Started.")
+        init()
+    }
+
+
+    def init() = {
+        Poller.registerExpiries()
     }
 }
 

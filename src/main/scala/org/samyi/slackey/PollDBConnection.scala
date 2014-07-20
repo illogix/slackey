@@ -93,10 +93,12 @@ class PollDBConnection(uri: String, dbname: String) {
         Vote(pollId, voter, choice, time)
     }
 
-    def getResults(pollId: Int) = {
-        val query = MongoDBObject("poll_id" -> pollId)
+    def getResults(poll: Poll): Map[String, List[Vote]] = {
+        val query = MongoDBObject("poll_id" -> poll.id)
         val votes = for (dbo <- votedb.find(query)) yield dboToVote(dbo)
-        votes.toList.groupBy(_.choice)
+        val voteMap = votes.toList.groupBy(_.choice)
+
+        poll.choices.map(c => c -> voteMap.getOrElse(c, List())).toMap
     }
 
     def vote(vote: Vote) = {
