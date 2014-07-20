@@ -12,11 +12,6 @@ case class Poll(id: Int, question: String, choices: List[String], anon: Boolean,
 case class Vote(pollId: Int, voter: String, choice: String, time: Long)
 
 object Poller {
-//    val poller = new Poller
-//    poller.registerPolls()
-//}
-//
-//class Poller {
 
     val db = new PollDBConnection(Web.mongoURI, Web.mongoDbName)
 
@@ -66,6 +61,7 @@ object Poller {
             val newPoll = Poll(0, question, choices, anon, "type", System.currentTimeMillis(), timeout, expired = false,
                 author, channel)
             val newPollWithId = db.addPoll(newPoll)
+            registerExpiry(newPollWithId)
             post(getPollDetails(newPollWithId))
             None
         } else {
@@ -113,7 +109,7 @@ object Poller {
 
     def registerExpiry(p: Poll) = pollTimer ! Expiry(p)
 
-    def registerPolls() = db.getActivePolls foreach registerExpiry
+    def registerExpiries() = db.getActivePolls foreach registerExpiry
 
     def processPoll(params: Map[String, String]): Option[String] = {
         def get(key: String): String = {
