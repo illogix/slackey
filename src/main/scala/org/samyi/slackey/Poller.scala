@@ -148,9 +148,9 @@ object Poller {
 
         val command: String = Web.decode(get("text")).trim
         if (command.startsWith("new ")) {
-            processNewPoll(command.stripPrefix("new ").trim, anon = false, get("user_name"), get("channel"))
+            processNewPoll(command.stripPrefix("new ").trim, anon = false, get("user_name"), get("channel_id"))
         } else if (command.startsWith("newanon ")) {
-            processNewPoll(command.stripPrefix("newanon ").trim, anon = true, get("user_name"), get("channel"))
+            processNewPoll(command.stripPrefix("newanon ").trim, anon = true, get("user_name"), get("channel_id"))
         } else if (command.startsWith("view ")) {
             Some(viewPoll(command.stripPrefix("view ").trim))
         } else if (command.startsWith("list")) {
