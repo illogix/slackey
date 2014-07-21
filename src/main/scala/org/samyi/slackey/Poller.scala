@@ -20,8 +20,20 @@ object Poller {
 
     // Poll functions
 
+    def getChoice(i: Int, acc: String = ""): String = {
+        val c: String = ('a'+i).toChar.toString
+        if (i > 26) getChoice(i/26, c) else c + acc
+    }
+
+    def getIndex(c: String, acc: Int = 0): Int = {
+        val pos = Math.pow(26, c.length-1).toInt
+        val char: Int = c.head.toLower - 'a' + 1
+        val ind = (pos * char) + acc - (if (c.length == 1) 1 else 0)
+        if (c.length > 1) getIndex(c.tail, ind) else ind
+    }
+
     def printChoices(p: Poll): String = {
-        (for (i <- p.choices.indices) yield s"(${('a'+i).toChar}) ${p.choices(i)}").mkString(", ")
+        (for (i <- p.choices.indices) yield s"(${getChoice(i)}) ${p.choices(i)}").mkString(", ")
     }
 
     def getPollSummary(p: Poll): String = {
@@ -46,7 +58,7 @@ object Poller {
         }
 
         val lines = for (i <- p.choices.indices; c = p.choices(i))
-        yield s"\n(${('a' + i).toChar}) $c: ${votesFor(c)}"
+        yield s"\n(${getChoice(i)}) $c: ${votesFor(c)}"
 
         lines.mkString("\n")
     }
@@ -54,9 +66,14 @@ object Poller {
     def getPollWinners(p: Poll): String = {
         val res: Map[String, List[Vote]] = db.getResults(p)
         val winCount = res.map(c => c._2.length).max
-        def style(c: (String, List[Vote])) = if (c._2.length == winCount) "*" else ""
 
-        res.map(c => s"${style(c)}${c._1} (${c._2.length})${style(c)}").mkString(", ")
+        def count(c: String) = res.getOrElse(c, List())
+        def style(c: String) = if (count(c).length == winCount) "*" else ""
+
+        val choiceResults = for (i <- p.choices.indices; c = p.choices(i))
+            yield s"${style(c)}$c (${count(c)})${style(c)}"
+
+        choiceResults.mkString(", ")
     }
 
     def processNewPoll(params: String, anon: Boolean, author: String, channel: String): Option[String] = {
@@ -159,7 +176,7 @@ object Poller {
             val pollId = voteParams(0).toInt
             db.getPoll(pollId) match {
                 case Some(p: Poll) => {
-                    val i: Int = voteParams(1).trim.charAt(0).toLower - 'a'
+                    val i: Int = getIndex(voteParams(1).trim)
                     if (p.expired) {
                         Some(s"Sorry, poll ${p.id} expired!")
                     } else if (i >= 0 && p.choices.length > i) {
