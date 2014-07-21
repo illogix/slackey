@@ -88,7 +88,7 @@ object Poller {
                 author, channel)
             val newPollWithId = db.addPoll(newPoll)
             registerExpiry(newPollWithId)
-            post(getPollDetails(newPollWithId))
+            post(getPollDetails(newPollWithId), channel)
             None
         } else {
             Some("Invalid poll, please seek help")
@@ -134,7 +134,7 @@ object Poller {
 
     def expirePoll(p: Poll) = {
         db.expirePoll(p.id)
-        post(s"${getPollSummary(p)} has expired!  Results: ${getPollWinners(p)}")
+        post(s"${getPollSummary(p)} has expired!  Results: ${getPollWinners(p)}", p.channel)
     }
 
     def registerExpiry(p: Poll) = if (p.timeout != 0) pollTimer ! Expiry(p)
@@ -194,8 +194,8 @@ object Poller {
     }
 
     // Web
-    private def post(text: String) = {
-        val postParams: List[(String, String)] = List(("username", "pollbot"), ("icon_emoji", ":bar_chart:"), ("text", text))
+    private def post(text: String, channel: String) = {
+        val postParams = List(("username", "pollbot"), ("icon_emoji", ":bar_chart:"), ("text", text), ("channel", channel))
         Web.sendToChannel(postParams)
     }
 }
