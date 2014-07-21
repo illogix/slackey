@@ -21,8 +21,8 @@ object Poller {
     // Poll functions
 
     def getChoice(i: Int, acc: String = ""): String = {
-        val c: String = ('a'+i%26).toChar.toString
-        if (i >= 26) getChoice(i/26-1, c) else c + acc
+        val c: String = ('a' + i%26).toChar.toString
+        if (i >= 26) getChoice(i/26 - 1, c + acc) else c + acc
     }
 
     def getIndex(c: String, acc: Int = 0): Int = {
