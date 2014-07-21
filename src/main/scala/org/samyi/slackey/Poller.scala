@@ -21,8 +21,8 @@ object Poller {
     // Poll functions
 
     def getChoice(i: Int, acc: String = ""): String = {
-        val c: String = ('a'+i).toChar.toString
-        if (i > 26) getChoice(i/26, c) else c + acc
+        val c: String = ('a'+i%26).toChar.toString
+        if (i >= 26) getChoice(i/26-1, c) else c + acc
     }
 
     def getIndex(c: String, acc: Int = 0): Int = {
@@ -67,8 +67,8 @@ object Poller {
         val res: Map[String, List[Vote]] = db.getResults(p)
         val winCount = res.map(c => c._2.length).max
 
-        def count(c: String) = res.getOrElse(c, List())
-        def style(c: String) = if (count(c).length == winCount) "*" else ""
+        def count(c: String) = res.getOrElse(c, List()).length
+        def style(c: String) = if (count(c) == winCount) "*" else ""
 
         val choiceResults = for (i <- p.choices.indices; c = p.choices(i))
             yield s"${style(c)}$c (${count(c)})${style(c)}"
