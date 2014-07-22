@@ -120,12 +120,12 @@ object Poller {
         }
     }
 
-    def listPolls(arg: String): String = {
+    def listPolls(arg: String, channel: String): String = {
         val all = arg.startsWith("all")
         val polls = if (all)
-            db.getPolls.map(p => getPollSummary(p)).mkString("\n")
+            db.getPolls(activeOnly = false, channel).map(p => getPollSummary(p)).mkString("\n")
         else
-            db.getActivePolls.map(p => getPollSummary(p)).mkString("\n")
+            db.getPolls(activeOnly = true, channel).map(p => getPollSummary(p)).mkString("\n")
 
         val intro = if (all) "All polls: " else "Active polls: "
 
@@ -139,7 +139,7 @@ object Poller {
 
     def registerExpiry(p: Poll) = if (p.timeout != 0) pollTimer ! Expiry(p)
 
-    def registerExpiries() = db.getActivePolls foreach registerExpiry
+    def registerExpiries() = db.getPolls() foreach registerExpiry
 
     def processPoll(params: Map[String, String]): Option[String] = {
         def get(key: String): String = {
@@ -154,7 +154,7 @@ object Poller {
         } else if (command.startsWith("view ")) {
             Some(viewPoll(command.stripPrefix("view ").trim))
         } else if (command.startsWith("list")) {
-            Some(listPolls(command.stripPrefix("list ").trim))
+            Some(listPolls(command.stripPrefix("list ").trim, get("channel_id")))
         } else if (command.startsWith("help ")) {
             val helpCommand: String = command.stripPrefix("help ").trim
             Some(getHelp(helpCommand))
