@@ -114,7 +114,7 @@ object Poller {
         } else if (command == "view") {
             "Views an existing poll with responses so far.\nUsage: /poll view <poll id>\nExample: /poll view 19"
         } else if (command == "list") {
-            "Lists all active polls. Specify \"all\" to view all polls.  \nUsage: /poll list [all]"
+            "Lists all active polls for current channel. Specify \"all\" to include expired polls.  \nUsage: /poll list [all]"
         } else {
             "Supported commands: new, newanon, view, list.  Type /poll help <command> for info."
         }
@@ -164,32 +164,43 @@ object Poller {
         }
     }
 
-
     // Vote functions
+
+    def vote(p: Poll, choice: String, username: String) = {
+        val i: Int = getIndex(choice.trim)
+        if (p.expired) {
+            Some(s"Sorry, poll ${p.id} expired!")
+        } else if (i >= 0 && p.choices.length > i) {
+            db.vote(Vote(p.id, username, p.choices(i), System.currentTimeMillis()))
+            Some("Vote cast for \"" + p.choices(i) + "\"!")
+        } else {
+            Some(s"$choice is not a valid choice!")
+        }
+    }
+
     def processVote(params: Map[String, String]): Option[String] = {
         def get(key: String): String = {
             params.getOrElse(key, s"(unknown $key)")
         }
 
         val voteParams: Array[String] = Web.decode(get("text")).trim.split(" ", 2)
-        if (voteParams.length == 2 && voteParams(0).forall(_.isDigit)) {
+        if (voteParams.length == 1) {
+            if (voteParams(0).forall(_.isDigit)) {
+                Some("You forgot the vote choice!  Correct format is: /vote <poll_id> <choice>")
+            } else {
+                db.getLatestPoll(get("channel_id")) match {
+                    case Some(p) => vote(p, voteParams(0), get("user_name"))
+                    case None => Some("No polls found for this channel!")
+                }
+            }
+        } else if (voteParams.length == 2 && voteParams(0).forall(_.isDigit)) {
             val pollId = voteParams(0).toInt
             db.getPoll(pollId) match {
-                case Some(p: Poll) => {
-                    val i: Int = getIndex(voteParams(1).trim)
-                    if (p.expired) {
-                        Some(s"Sorry, poll ${p.id} expired!")
-                    } else if (i >= 0 && p.choices.length > i) {
-                        db.vote(Vote(pollId, get("user_name"), p.choices(i), System.currentTimeMillis()))
-                        Some("Vote cast for \"" + p.choices(i) + "\"!")
-                    } else {
-                        Some(s"${voteParams(1)} is not a valid choice!")
-                    }
-                }
+                case Some(p) => vote(p, voteParams(1), get("user_name"))
                 case None => Some(s"Poll id ${voteParams(0)} not found!")
             }
         } else {
-            Some("Invalid vote.  Correct format is: /vote <poll_id> <choice_letter>")
+            Some("Invalid vote.  Correct format is: /vote <poll_id> <choice>")
         }
     }
 

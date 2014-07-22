@@ -39,6 +39,13 @@ class PollDBConnection(uri: String, dbname: String) {
         Poll(id, question, choices, anon, ptype, start, timeout, expired, author, channel)
     }
 
+    def getLatestPoll(channelId: String): Option[Poll] = {
+        val query = MongoDBObject("channel" -> channelId)
+        val idSort = MongoDBObject("_id" -> -1)
+        val latest = for (dbo <- polldb.find(query).sort(idSort).limit(1)) yield dboToPoll(dbo)
+        if (latest.hasNext) Some(latest.next()) else None
+    }
+
     def getPoll(pollId: Int) = {
         val query = MongoDBObject("_id" -> pollId)
         polldb.findOne(query) match {
