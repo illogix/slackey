@@ -55,7 +55,7 @@ object Web {
 
 
     def init() = {
-        Poller.registerExpiries()
+        Poller.scheduleExpiries()
     }
 }
 

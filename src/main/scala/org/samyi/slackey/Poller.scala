@@ -87,7 +87,7 @@ object Poller {
             val newPoll = Poll(0, question, choices, anon, "type", System.currentTimeMillis(), timeout, expired = false,
                 author, channel)
             val newPollWithId = db.addPoll(newPoll)
-            registerExpiry(newPollWithId)
+            scheduleExpiry(newPollWithId)
             post(getPollDetails(newPollWithId), channel)
             None
         } else {
@@ -137,9 +137,9 @@ object Poller {
         post(s"${getPollSummary(p)} has expired!  Results: ${getPollWinners(p)}", p.channel)
     }
 
-    def registerExpiry(p: Poll) = if (p.timeout != 0) pollTimer ! Expiry(p)
+    def scheduleExpiry(p: Poll) = if (p.timeout != 0) pollTimer ! Expiry(p)
 
-    def registerExpiries() = db.getPolls() foreach registerExpiry
+    def scheduleExpiries() = db.getPolls(activeOnly = true) foreach scheduleExpiry
 
     def processPoll(params: Map[String, String]): Option[String] = {
         def get(key: String): String = {
