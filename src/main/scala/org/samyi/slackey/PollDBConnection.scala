@@ -55,7 +55,7 @@ class PollDBConnection(uri: String, dbname: String) {
     }
 
     def getPolls(activeOnly: Boolean = false, channelId: String = ""): Iterator[Poll] = {
-        val activeQuery = if (activeOnly) Nil else List("expired" -> false)
+        val activeQuery = if (activeOnly) List("expired" -> false) else Nil
         val chanQuery = if (channelId.isEmpty) Nil else List("channel" -> channelId)
         val query = MongoDBObject(activeQuery ++ chanQuery)
         for (dbo <- polldb.find(query)) yield dboToPoll(dbo)
