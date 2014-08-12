@@ -178,12 +178,14 @@ object Poller {
         }
     }
 
-    def processVote(params: Map[String, String]): Option[String] = {
+    def processVote(params: Map[String, String], slash: Boolean = true): Option[String] = {
         def get(key: String): String = {
             params.getOrElse(key, s"(unknown $key)")
         }
 
-        val voteParams: Array[String] = Web.decode(get("text")).trim.split(" ", 2)
+        val voteParams: Array[String] =
+            if (slash) Web.decode(get("text")).trim.split(" ", 2) else Web.decode(get("text")).trim.split(" ", 2).tail
+
         if (voteParams.length == 1) {
             if (voteParams(0).forall(_.isDigit)) {
                 Some("You forgot the vote choice!  Correct format is: /vote <poll_id> <choice>")
