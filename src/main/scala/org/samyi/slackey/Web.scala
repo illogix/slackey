@@ -82,7 +82,7 @@ class Slackey extends Service[HttpRequest, HttpResponse] {
 
         get("token") match {
             case Web.outWebHookToken => Web.decode(get("text")).split("\\s+")(0) match {
-                case "!vote" => respond(Poller.processVote(params, slash = false), json = false)
+                case "%21vote" => respond(Poller.processVote(params, slash = false), json = false)
                 case _ => respond(None)
             }
             case Web.slashRollToken => respond(dice.process(params), json = false)
