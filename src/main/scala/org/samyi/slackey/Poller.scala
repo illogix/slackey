@@ -150,7 +150,7 @@ object Poller {
         }
 
         val command: String = Web.decode(get("text")).trim
-        loggingActor ! Log(s"processPoll: $command")
+
         if (command.startsWith("new ")) {
             processNewPoll(command.stripPrefix("new ").trim, anon = false, get("user_name"), get("channel_id"))
         } else if (command.startsWith("newanon ")) {
@@ -182,16 +182,12 @@ object Poller {
         }
     }
 
-    def processVote(params: Map[String, String], slash: Boolean = true): Option[String] = {
+    def processVote(params: Map[String, String]): Option[String] = {
         def get(key: String): String = {
             params.getOrElse(key, s"(unknown $key)")
         }
 
-        val command: String = Web.decode(get("text")).trim
-        loggingActor ! Log(s"processPoll: $command")
-
-        val voteParams: Array[String] =
-            if (slash) command.split(" ", 2) else command.split(" ", 2).tail
+        val voteParams: Array[String] = Web.decode(get("text")).trim.split(" ", 2)
 
         if (voteParams.length == 1) {
             if (voteParams(0).forall(_.isDigit)) {

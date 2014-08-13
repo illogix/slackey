@@ -85,7 +85,7 @@ class Slackey extends Service[HttpRequest, HttpResponse] with LazyLogging {
             case Web.outWebHookToken => Web.decode(get("text")).split("\\s+")(0) match {
                 case "!vote" => {
                     Poller.log(s"!vote: ${Web.decode(get("text"))}")
-                    respond(Poller.processVote(params, slash = false), json = false)
+                    respond(Poller.processVote(params), json = false)
                 }
                 case _ => {
                     Poller.log(s"outwebhook: ${Web.decode(get("text"))}")
