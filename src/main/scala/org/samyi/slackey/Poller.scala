@@ -15,8 +15,9 @@ object Poller {
 
     val db = new PollDBConnection(Web.mongoURI, Web.mongoDbName)
 
-    val system = ActorSystem("PollSystem")
-    val pollTimer = system.actorOf(Props[PollTimer], name = "pollactor")
+    val system = ActorSystem("PollerSystem")
+    val pollTimer = system.actorOf(Props[PollTimer], name = "polltimer")
+    val loggingActor = system.actorOf(Props[LoggingActor], name = "loggingactor")
 
     // Poll functions
 
@@ -141,12 +142,15 @@ object Poller {
 
     def scheduleExpiries() = db.getPolls(activeOnly = true) foreach scheduleExpiry
 
+    def log(msg: String) = loggingActor ! Log(msg)
+
     def processPoll(params: Map[String, String]): Option[String] = {
         def get(key: String): String = {
             params.getOrElse(key, s"(unknown $key)")
         }
 
         val command: String = Web.decode(get("text")).trim
+        loggingActor ! Log(s"processPoll: $command")
         if (command.startsWith("new ")) {
             processNewPoll(command.stripPrefix("new ").trim, anon = false, get("user_name"), get("channel_id"))
         } else if (command.startsWith("newanon ")) {
@@ -183,8 +187,11 @@ object Poller {
             params.getOrElse(key, s"(unknown $key)")
         }
 
+        val command: String = Web.decode(get("text")).trim
+        loggingActor ! Log(s"processPoll: $command")
+
         val voteParams: Array[String] =
-            if (slash) Web.decode(get("text")).trim.split(" ", 2) else Web.decode(get("text")).trim.split(" ", 2).tail
+            if (slash) command.split(" ", 2) else command.split(" ", 2).tail
 
         if (voteParams.length == 1) {
             if (voteParams(0).forall(_.isDigit)) {
