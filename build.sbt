@@ -20,5 +20,6 @@ libraryDependencies ++= Seq(
 "org.scalaj" %% "scalaj-http" % "0.3.16",
 "org.mongodb" %% "casbah" % "2.7.2",
 "com.typesafe.akka" %% "akka-actor" % "2.3.4",
-"com.newrelic.agent.java" % "newrelic-agent" % "3.8.1"
+"com.newrelic.agent.java" % "newrelic-agent" % "3.8.1",
+"com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
 )

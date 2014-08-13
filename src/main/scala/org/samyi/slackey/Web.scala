@@ -4,6 +4,7 @@ import com.twitter.finagle.builder.ServerBuilder
 import com.twitter.finagle.http.{Http, Response}
 import com.twitter.finagle.Service
 import com.twitter.util.Future
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 import java.net.{InetSocketAddress, URLDecoder}
 import java.nio.charset.Charset
@@ -59,7 +60,7 @@ object Web {
     }
 }
 
-class Slackey extends Service[HttpRequest, HttpResponse] {
+class Slackey extends Service[HttpRequest, HttpResponse] with LazyLogging {
 
     val dice: Dice = new Dice
 
@@ -82,8 +83,14 @@ class Slackey extends Service[HttpRequest, HttpResponse] {
 
         get("token") match {
             case Web.outWebHookToken => Web.decode(get("text")).split("\\s+")(0) match {
-                case "%21vote" => respond(Poller.processVote(params, slash = false), json = false)
-                case _ => respond(None)
+                case "!vote" => {
+                    logger.info(get("text"))
+                    respond(Poller.processVote(params, slash = false), json = false)
+                }
+                case _ => {
+                    logger.info(get("text"))
+                    respond(None)
+                }
             }
             case Web.slashRollToken => respond(dice.process(params), json = false)
             case Web.slashPollToken => respond(Poller.processPoll(params), json = false)
