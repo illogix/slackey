@@ -1,5 +1,6 @@
 package org.samyi.slackey
 
+import akka.actor.{Props, ActorSystem}
 import com.twitter.finagle.builder.ServerBuilder
 import com.twitter.finagle.http.{Http, Response}
 import com.twitter.finagle.Service
@@ -10,6 +11,7 @@ import java.net.{InetSocketAddress, URLDecoder}
 import java.nio.charset.Charset
 
 import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
+import org.samyi.slackey.bots.casbot.Casbot
 
 import scalaj.http.{Http => JHttp}
 import util.Properties
@@ -20,6 +22,7 @@ object Web {
     val slashRollToken: String = System.getenv("SLASH_ROLL_TOKEN")
     val slashPollToken: String = System.getenv("SLASH_POLL_TOKEN")
     val slashVoteToken: String = System.getenv("SLASH_VOTE_TOKEN")
+    val slashCasToken: String = System.getenv("SLASH_CAS_TOKEN")
     val inWebHookURL: String = System.getenv("IN_WEBHOOK_URL")
     val mongoURI: String = System.getenv("MONGO_MACK_URI")
     val mongoDbName: String = System.getenv("MONGO_MACK_DB")
@@ -63,6 +66,9 @@ object Web {
 class Slackey extends Service[HttpRequest, HttpResponse] with LazyLogging {
 
     val dice: Dice = new Dice
+    val system = ActorSystem("Slackey")
+    val casbot = system.actorOf(Props[Casbot])
+
 
     def apply(req: HttpRequest): Future[HttpResponse] = {
         val postParams: List[String] = req.getContent.toString(Charset.forName("UTF-8")).split("&").toList
@@ -89,6 +95,9 @@ class Slackey extends Service[HttpRequest, HttpResponse] with LazyLogging {
             case Web.slashRollToken => respond(dice.process(params), json = false)
             case Web.slashPollToken => respond(Poller.processPoll(params), json = false)
             case Web.slashVoteToken => respond(Poller.processVote(params), json = false)
+            case Web.slashCasToken  =>
+              casbot ! Req(params)
+              respond(None)
             case _ => respond(None)
         }
     }
