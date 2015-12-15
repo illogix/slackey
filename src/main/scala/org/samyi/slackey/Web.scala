@@ -1,11 +1,13 @@
 package org.samyi.slackey
 
 import akka.actor.{Props, ActorSystem}
+import akka.pattern.ask
+import akka.util.Timeout
 import com.twitter.finagle.builder.ServerBuilder
 import com.twitter.finagle.http.{Http, Response}
 import com.twitter.finagle.Service
-import com.twitter.util.Future
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import com.twitter.util.{Future => TwitterFuture, Throw, Return, Promise => TwitterPromise}
 
 import java.net.{InetSocketAddress, URLDecoder}
 import java.nio.charset.Charset
@@ -13,8 +15,11 @@ import java.nio.charset.Charset
 import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
 import org.samyi.slackey.bots.casbot.Casbot
 
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future, Promise}
 import scalaj.http.{Http => JHttp}
-import util.Properties
+import scala.util.{Failure, Success, Properties}
 
 object Web {
     // These should be set in Heroku as config vars
@@ -70,7 +75,7 @@ class Slackey extends Service[HttpRequest, HttpResponse] with LazyLogging {
     val casbot = system.actorOf(Props[Casbot])
 
 
-    def apply(req: HttpRequest): Future[HttpResponse] = {
+    def apply(req: HttpRequest): TwitterFuture[HttpResponse] = {
         val postParams: List[String] = req.getContent.toString(Charset.forName("UTF-8")).split("&").toList
         val params = postParams.map(pp => {
             pp.split("=") match {
@@ -82,7 +87,25 @@ class Slackey extends Service[HttpRequest, HttpResponse] with LazyLogging {
         process(params)
     }
 
-    def process(params: Map[String, String]): Future[HttpResponse] = {
+    def fromTwitterFuture[A](twitterFuture: TwitterFuture[A]): Future[A] = {
+        val promise = Promise[A]()
+        twitterFuture respond {
+            case Return(a) => promise success a
+            case Throw(e)  => promise failure e
+        }
+        promise.future
+    }
+
+    def toTwitterFuture[A](future: Future[A]): TwitterFuture[A] = {
+        val promise = TwitterPromise[A]()
+        future onComplete {
+            case Success(result) => promise setValue result
+            case Failure(throwable) => promise raise throwable
+        }
+        promise
+    }
+
+    def process(params: Map[String, String]): TwitterFuture[HttpResponse] = {
         def get(key: String): String = {
             params.getOrElse(key, "(unknown " + key + ")")
         }
@@ -96,19 +119,22 @@ class Slackey extends Service[HttpRequest, HttpResponse] with LazyLogging {
             case Web.slashPollToken => respond(Poller.processPoll(params), json = false)
             case Web.slashVoteToken => respond(Poller.processVote(params), json = false)
             case Web.slashCasToken  =>
-              casbot ! Req(params)
-              respond(None)
+                implicit val timeout = Timeout(3.seconds)
+                val resp = (casbot ? Req(params)).mapTo[Option[String]]
+                toTwitterFuture(resp) flatMap { os => respond(os) }
+//                casbot ! Req(params)
+//                respond(None)
             case _ => respond(None)
         }
     }
 
-    def respond(resp: Option[String], json: Boolean = true): Future[HttpResponse] = {
+    def respond(resp: Option[String], json: Boolean = true): TwitterFuture[HttpResponse] = {
         val response = Response()
         response.setStatusCode(200)
         resp match {
             case Some(respText) => response.setContentString(if (json) Web.makeJson(List(("text", respText))) else respText)
             case None =>
         }
-        Future(response)
+        TwitterFuture(response)
     }
 }

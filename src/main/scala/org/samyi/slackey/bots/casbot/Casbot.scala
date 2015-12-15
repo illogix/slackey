@@ -22,7 +22,7 @@ class Casbot(stuff: String) extends Actor {
   var players: Map[String, ActorRef] = Map.empty
 
    def receive = {
-     case Req(params) =>
+     case Req(params) => sender() ! Some(params.getOrElse("user_name", "unknown user_name"))
 
      case AddPlayer(name) =>
        players get name match {
